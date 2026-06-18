@@ -8,7 +8,7 @@ const bookProperty = async (req, res) => {
 
     const booking = await Booking.create({
       user: req.user.id,
-      property: propertyId,
+      property: req.body.propertyId,
     });
 
     res.status(201).json(booking);

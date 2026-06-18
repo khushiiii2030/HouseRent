@@ -1,56 +1,164 @@
-import { Link, Outlet } from "react-router-dom";
+import { useState } from "react";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 
 export default function OwnerHome() {
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/login");
+  };
+
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div style={styles.wrapper}>
 
       {/* SIDEBAR */}
-      <div
-        style={{
-          width: "220px",
-          background: "#111",
-          color: "white",
-          padding: "20px"
-        }}
-      >
+      <div style={styles.sidebar}>
         <h2>🏠 Owner Panel</h2>
 
-        <nav style={{ marginTop: "20px" }}>
-          <ul style={{ listStyle: "none", padding: 0 }}>
+        <NavLink to="/owner" style={styles.link}>
+          📊 Dashboard
+        </NavLink>
 
-            <li style={{ margin: "10px 0" }}>
-              <Link to="" style={{ color: "white", textDecoration: "none" }}>
-                🏠 Dashboard
-              </Link>
-            </li>
+        <NavLink to="/owner/add-property" style={styles.link}>
+          ➕ Add Property
+        </NavLink>
 
-            <li style={{ margin: "10px 0" }}>
-              <Link to="properties" style={{ color: "white", textDecoration: "none" }}>
-                🏡 My Properties
-              </Link>
-            </li>
+        <NavLink to="/owner/properties" style={styles.link}>
+          🏡 My Properties
+        </NavLink>
 
-            <li style={{ margin: "10px 0" }}>
-              <Link to="add-property" style={{ color: "white", textDecoration: "none" }}>
-                ➕ Add Property
-              </Link>
-            </li>
-
-            <li style={{ margin: "10px 0" }}>
-              <Link to="bookings" style={{ color: "white", textDecoration: "none" }}>
-                📅 Bookings
-              </Link>
-            </li>
-
-          </ul>
-        </nav>
+        <NavLink to="/owner/bookings" style={styles.link}>
+          📅 Bookings
+        </NavLink>
       </div>
 
-      {/* MAIN CONTENT */}
-      <div style={{ flex: 1, padding: "20px", background: "#f4f6f8" }}>
-        <Outlet />
-      </div>
+      {/* MAIN */}
+      <div style={styles.main}>
 
+        {/* TOP BAR */}
+        <div style={styles.topbar}>
+          <h3>Welcome Owner 👋</h3>
+
+          {/* PROFILE DROPDOWN */}
+          <div style={styles.profileBox}>
+            <div
+              style={styles.profile}
+              onClick={() => setOpen(!open)}
+            >
+              👤 Profile ⬇
+            </div>
+
+            {open && (
+              <div style={styles.dropdown}>
+                <button style={styles.dropItem}>
+                  My Profile
+                </button>
+
+                <button
+                  style={styles.logout}
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* CONTENT */}
+        <div style={styles.content}>
+          <Outlet />
+        </div>
+
+      </div>
     </div>
   );
 }
+
+const styles = {
+  wrapper: {
+    display: "flex",
+    height: "100vh",
+    fontFamily: "Arial",
+  },
+
+  sidebar: {
+    width: "220px",
+    background: "#363030",
+    color: "white",
+    padding: "20px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+  },
+
+  link: {
+    color: "white",
+    textDecoration: "none",
+    padding: "8px",
+    borderRadius: "5px",
+  },
+
+  main: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+  },
+
+  topbar: {
+    height: "60px",
+    background: "#f4f4f4",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "0 20px",
+    borderBottom: "1px solid #ddd",
+  },
+
+  profileBox: {
+    position: "relative",
+  },
+
+  profile: {
+    background: "#000",
+    color: "white",
+    padding: "6px 12px",
+    borderRadius: "20px",
+    cursor: "pointer",
+  },
+
+  dropdown: {
+    position: "absolute",
+    right: 0,
+    top: "40px",
+    background: "white",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    width: "120px",
+    display: "flex",
+    flexDirection: "column",
+  },
+
+  dropItem: {
+    padding: "10px",
+    border: "none",
+    background: "white",
+    cursor: "pointer",
+  },
+
+  logout: {
+    padding: "10px",
+    border: "none",
+    background: "red",
+    color: "white",
+    cursor: "pointer",
+  },
+
+  content: {
+    padding: "20px",
+    overflowY: "auto",
+  },
+};

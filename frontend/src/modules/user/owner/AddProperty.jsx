@@ -10,7 +10,10 @@ export default function AddProperty() {
   });
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -19,18 +22,13 @@ export default function AddProperty() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await api.post(
-        "/owner/add-property",
-        form,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      await api.post("/owner/add-property", form, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
 
       alert("Property added successfully!");
-      console.log(res.data);
 
       setForm({
         title: "",
@@ -46,10 +44,11 @@ export default function AddProperty() {
   };
 
   return (
-    <div>
-      <h2>➕ Add Property</h2>
+    <div style={styles.page}>
 
       <form onSubmit={handleSubmit} style={styles.form}>
+
+        <h2 style={{ textAlign: "center" }}>➕ Add Property</h2>
 
         <input
           name="title"
@@ -80,8 +79,8 @@ export default function AddProperty() {
 
         <input
           name="rent"
-          placeholder="Rent"
           type="number"
+          placeholder="Rent"
           value={form.rent}
           onChange={handleChange}
           style={styles.input}
@@ -93,28 +92,46 @@ export default function AddProperty() {
         </button>
 
       </form>
+
     </div>
   );
 }
 
 const styles = {
+  page: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "80vh",
+    background: "#f5f6fa"
+  },
+
   form: {
+    width: "450px",
+    padding: "30px",
+    background: "white",
+    borderRadius: "12px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
     display: "flex",
     flexDirection: "column",
-    width: "350px",
-    gap: "10px"
+    gap: "15px"
   },
+
   input: {
-    padding: "10px",
+    padding: "12px",
+    fontSize: "15px",
     border: "1px solid #ccc",
-    borderRadius: "6px"
+    borderRadius: "8px",
+    width: "100%"
   },
+
   button: {
-    padding: "10px",
+    padding: "12px",
     background: "black",
     color: "white",
     border: "none",
-    borderRadius: "6px",
-    cursor: "pointer"
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "16px"
   }
 };

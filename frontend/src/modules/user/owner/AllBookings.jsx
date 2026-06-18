@@ -6,72 +6,96 @@ export default function AllBookings() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        const res = await api.get("/booking/owner", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        setBookings(res.data.bookings || []);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
     fetchBookings();
   }, []);
 
-  const filtered = bookings.filter(
-    (b) =>
-      b.user?.name?.toLowerCase().includes(search.toLowerCase()) ||
-      b.property?.title?.toLowerCase().includes(search.toLowerCase())
+  useEffect(() => {
+    console.log("BOOKINGS DATA:", bookings);
+    console.log("FIRST BOOKING:", bookings[0]);
+  }, [bookings]);
+
+  const fetchBookings = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await api.get("/owner/bookings", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setBookings(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const filteredBookings = bookings.filter((b) =>
+    b.property?.title?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div>
-      <h2>📅 Owner Bookings</h2>
+    <div style={styles.page}>
+      <h2>📅 All Bookings</h2>
 
       <input
-        placeholder="🔍 Search bookings..."
+        type="text"
+        placeholder="Search property..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         style={{
-          padding: "10px",
-          width: "300px",
+          padding: "8px",
           margin: "10px 0",
-          borderRadius: "6px",
-          border: "1px solid #ccc"
+          width: "100%",
+          maxWidth: "300px",
         }}
       />
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
+      <div style={styles.grid}>
+        {filteredBookings.map((b) => (
+          <div key={b._id} style={styles.card}>
 
-        {filtered.map((b) => (
-          <div
-            key={b._id}
-            style={{
-              width: "320px",
-              padding: "15px",
-              border: "1px solid #ddd",
-              borderRadius: "10px",
-              background: "#fff",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
-            }}
-          >
-            <h3>👤 {b.user?.name}</h3>
-            <p>📧 {b.user?.email}</p>
+            <h3>{b.property?.title || "No Title"}</h3>
 
-            <p>🏠 {b.property?.title || "Property"}</p>
+            <p>👤 User: {b.user?.name || "N/A"}</p>
+            <p>📧 Email: {b.user?.email || "N/A"}</p>
 
-            <p>📌 Status: {b.status}</p>
+            <p>
+              📍 Location: {b.property?.location || b.property?.address || "N/A"}
+            </p>
+
+            <p>
+              💰 Rent: ₹
+              {b.property?.rent ||
+                b.property?.price ||
+                b.property?.monthlyRent ||
+                "N/A"}
+            </p>
+
+            <p>Status: {b.status || "N/A"}</p>
+
           </div>
         ))}
-
       </div>
     </div>
   );
 }
+
+const styles = {
+  page: {
+    padding: "20px",
+  },
+
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+    gap: "15px",
+  },
+
+  card: {
+    background: "#fff",
+    padding: "15px",
+    borderRadius: "10px",
+    boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
+  },
+};

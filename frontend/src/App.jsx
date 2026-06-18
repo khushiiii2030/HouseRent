@@ -8,10 +8,11 @@ import AllBookings from "./modules/admin/AllBookings";
 import AdminDashboard from "./modules/admin/AdminDashboard";
 
 // OWNER
-import OwnerHome from "./modules/owner/OwnerHome";
-import AddProperty from "./modules/owner/AddProperty.jsx";
-import OwnerProperties from "./modules/owner/AllProperties";
-import OwnerBookings from "./modules/owner/OwnerBookings";
+import OwnerHome from "./modules/user/owner/OwnerHome";
+import AddProperty from "./modules/user/owner/AddProperty";
+import OwnerProperties from "./modules/user/owner/AllProperties";
+import OwnerBookings from "./modules/user/owner/AllBookings";
+import OwnerDashboard from "./modules/user/owner/Dashboard";
 
 // AUTH
 import Login from "./modules/common/Login";
@@ -57,7 +58,9 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<h2>Owner Dashboard</h2>} />
+        {/* ✅ NEW DASHBOARD ADDED */}
+        <Route index element={<OwnerDashboard />} />
+
         <Route path="add-property" element={<AddProperty />} />
         <Route path="properties" element={<OwnerProperties />} />
         <Route path="bookings" element={<OwnerBookings />} />
