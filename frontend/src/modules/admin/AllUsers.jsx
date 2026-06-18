@@ -7,8 +7,8 @@ export default function AllUsers() {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const res = await api.get("/user");
-      setUsers(res.data.users || res.data);
+      const res = await api.get("/user/all"); // ✅ FIXED ROUTE
+      setUsers(res.data); // ✅ backend returns array directly
     };
 
     fetchUsers();

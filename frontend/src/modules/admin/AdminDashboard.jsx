@@ -9,15 +9,20 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const u = await api.get("/user");
+        // ✅ USERS
+        const u = await api.get("/user/all");
+
+        // ✅ PROPERTIES
         const p = await api.get("/property");
+
+        // ✅ BOOKINGS
         const b = await api.get("/booking");
 
-        setUsers(u.data.length || u.data.count || 0);
-        setProperties(p.data.count || p.data.length || 0);
-        setBookings(b.data.count || b.data.length || 0);
+        setUsers(Array.isArray(u.data) ? u.data.length : 0);
+        setProperties(Array.isArray(p.data) ? p.data.length : 0);
+        setBookings(Array.isArray(b.data) ? b.data.length : 0);
       } catch (err) {
-        console.log(err);
+        console.log("Dashboard Error:", err);
       }
     };
 
@@ -29,17 +34,17 @@ export default function AdminDashboard() {
       <h2>📊 Admin Dashboard</h2>
 
       <div style={styles.grid}>
-        <div style={styles.card}>
+        <div style={{ ...styles.card, background: "#e3f2fd" }}>
           <h3>👤 Users</h3>
           <p>{users}</p>
         </div>
 
-        <div style={styles.card}>
+        <div style={{ ...styles.card, background: "#e8f5e9" }}>
           <h3>🏠 Properties</h3>
           <p>{properties}</p>
         </div>
 
-        <div style={styles.card}>
+        <div style={{ ...styles.card, background: "#fff3e0" }}>
           <h3>📅 Bookings</h3>
           <p>{bookings}</p>
         </div>
@@ -50,19 +55,22 @@ export default function AdminDashboard() {
 
 const styles = {
   container: {
-    padding: "20px"
+    padding: "20px",
   },
+
   grid: {
     display: "flex",
     gap: "20px",
-    marginTop: "20px"
+    marginTop: "20px",
+    flexWrap: "wrap",
   },
+
   card: {
     flex: 1,
+    minWidth: "200px",
     padding: "20px",
     borderRadius: "10px",
-    background: "#fff",
     boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-    textAlign: "center"
-  }
+    textAlign: "center",
+  },
 };

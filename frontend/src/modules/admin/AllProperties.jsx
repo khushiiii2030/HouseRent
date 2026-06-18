@@ -17,6 +17,21 @@ export default function AllProperties() {
     fetchData();
   }, []);
 
+  // 🚀 BOOK PROPERTY FUNCTION (ADDED)
+  const bookProperty = async (propertyId) => {
+    try {
+      const res = await api.post("/booking/book", {
+        propertyId: propertyId,
+      });
+
+      alert("Booking successful!");
+      console.log(res.data);
+    } catch (err) {
+      console.log(err);
+      alert("Booking failed");
+    }
+  };
+
   const filtered = properties.filter((item) =>
     item.title?.toLowerCase().includes(search.toLowerCase()) ||
     item.location?.toLowerCase().includes(search.toLowerCase())
@@ -57,9 +72,23 @@ export default function AllProperties() {
             <p style={{ fontSize: "14px", color: "#555" }}>
               📝 {item.description}
             </p>
-            <h4 style={{ color: "green" }}>
-              ₹ {item.rent}
-            </h4>
+            <h4 style={{ color: "green" }}>₹ {item.rent}</h4>
+
+            {/* 🚀 BOOK BUTTON (ADDED) */}
+            <button
+              onClick={() => bookProperty(item._id)}
+              style={{
+                marginTop: "10px",
+                padding: "8px 12px",
+                background: "blue",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer"
+              }}
+            >
+              📅 Book Now
+            </button>
           </div>
         ))}
       </div>
