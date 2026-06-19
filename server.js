@@ -14,6 +14,7 @@ app.use(cors({
   origin: ["http://localhost:5173", "http://localhost:5176"],
   credentials: true
 }));
+
 app.use(express.json());
 
 // ================= DATABASE =================
@@ -30,9 +31,10 @@ const ownerRoutes = require("./server/routers/ownerRoutes");
 const userRoutes = require("./server/routers/userRoutes");
 const propertyRoutes = require("./server/routers/propertyRoutes");
 const bookingRoutes = require("./server/routers/bookingRoutes");
-
-// ⚠️ Only keep authRoutes if you REALLY have it
 const authRoutes = require("./server/routers/authRoutes");
+
+// ✔ FIXED WISHLIST ROUTE (IMPORTANT)
+const wishlistRoutes = require("./server/routers/wishlistRoutes");
 
 // ================= USE ROUTES =================
 app.use("/api/admin", adminRoutes);
@@ -40,9 +42,10 @@ app.use("/api/owner", ownerRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/property", propertyRoutes);
 app.use("/api/booking", bookingRoutes);
-
-// auth routes (only if file exists)
 app.use("/api/auth", authRoutes);
+
+// ✔ FIXED PATH HERE
+app.use("/api/wishlist", wishlistRoutes);
 
 // ================= SERVER =================
 const PORT = process.env.PORT || 8000;

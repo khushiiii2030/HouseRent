@@ -1,60 +1,82 @@
 const Booking = require("../models/BookingSchema");
 const Property = require("../models/PropertySchema");
 
-// USER BOOK PROPERTY
+// ================= BOOK PROPERTY =================
 const bookProperty = async (req, res) => {
   try {
     const { propertyId } = req.body;
 
-    const booking = await Booking.create({
+    if (!propertyId) {
+      return res.status(400).json({ message: "Property ID is required" });
+    }
+
+    // 🔒 SAFE DUPLICATE CHECK (IMPORTANT FIX)
+    const alreadyBooked = await Booking.findOne({
       user: req.user.id,
-      property: req.body.propertyId,
+      property: propertyId,
     });
 
-    res.status(201).json(booking);
+    if (alreadyBooked) {
+      return res.status(400).json({
+        message: "You already booked this property",
+      });
+    }
+
+    // ✅ CREATE BOOKING
+    const booking = await Booking.create({
+      user: req.user.id,
+      property: propertyId,
+      status: "pending",
+    });
+
+    return res.status(201).json(booking);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.log("BOOKING ERROR:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
-// GET USER BOOKINGS
+// ================= MY BOOKINGS =================
 const getMyBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ user: req.user.id })
-      .populate("property")
-      .populate("user", "name email");
+    const bookings = await Booking.find({
+      user: req.user.id,
+    }).populate("property");
 
-    res.json({
+    return res.json({
       count: bookings.length,
       bookings,
     });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
 };
 
-// OWNER: SEE BOOKINGS ON THEIR PROPERTIES
+// ================= OWNER BOOKINGS =================
 const getOwnerBookings = async (req, res) => {
   try {
-    // step 1: find properties owned by this owner
     const properties = await Property.find({ owner: req.user.id });
 
     const propertyIds = properties.map((p) => p._id);
 
-    // step 2: find bookings for those properties
     const bookings = await Booking.find({
       property: { $in: propertyIds },
     })
       .populate("user", "name email")
       .populate("property", "title location rent");
 
-    res.json({
+    return res.json({
       count: bookings.length,
       bookings,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.log("OWNER BOOKINGS ERROR:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = { bookProperty, getMyBookings,getOwnerBookings };
+module.exports = {
+  bookProperty,
+  getMyBookings,
+  getOwnerBookings,
+};

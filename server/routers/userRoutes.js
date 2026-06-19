@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const User = require("../models/UserSchema"); // user model
+const User = require("../models/UserSchema");
 
 const { registerUser, loginUser } = require("../controllers/userController");
 const { protect, authorizeRoles } = require("../middlewares/authMiddleware");
@@ -12,12 +12,19 @@ router.post("/register", registerUser);
 // ================= LOGIN =================
 router.post("/login", loginUser);
 
-// ================= PROTECTED =================
-router.get("/profile", protect, (req, res) => {
-  res.json({
-    message: "You are logged in",
-    user: req.user
-  });
+// ================= GET LOGGED IN USER =================
+router.get("/me", protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 // ================= GET ALL USERS (ADMIN PANEL) =================
@@ -30,7 +37,7 @@ router.get("/all", async (req, res) => {
   }
 });
 
-// ================= DELETE USER (ADMIN PANEL) =================
+// ================= DELETE USER (ADMIN) =================
 router.delete("/:id", protect, authorizeRoles("admin"), async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);

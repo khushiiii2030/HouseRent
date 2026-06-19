@@ -25,7 +25,7 @@ export default function AdminHome() {
       {/* MAIN */}
       <div style={styles.main}>
 
-        {/* TOP BAR */}
+        {/* TOP BAR (CLEANED - NO PROFILE DROPDOWN) */}
         <div style={styles.topbar}>
           <div>
             <h3>👤 {user?.name}</h3>
@@ -34,6 +34,7 @@ export default function AdminHome() {
             </small>
           </div>
 
+          {/* ONLY LOGOUT BUTTON */}
           <button onClick={logout} style={styles.logout}>
             Logout
           </button>

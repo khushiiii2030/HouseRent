@@ -2,7 +2,7 @@ const User = require("../models/UserSchema");
 const Property = require("../models/PropertySchema");
 const Booking = require("../models/BookingSchema");
 
-// GET ALL USERS (ADMIN ONLY)
+// GET ALL USERS
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password");
@@ -16,7 +16,7 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// GET ALL PROPERTIES (ADMIN)
+// GET ALL PROPERTIES
 const getAllProperties = async (req, res) => {
   try {
     const properties = await Property.find()
@@ -31,7 +31,7 @@ const getAllProperties = async (req, res) => {
   }
 };
 
-// GET ALL BOOKINGS (ADMIN)
+// GET ALL BOOKINGS
 const getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find()
@@ -47,8 +47,21 @@ const getAllBookings = async (req, res) => {
   }
 };
 
+// DELETE USER
+const deleteUser = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+
+    res.json({ message: "User deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// EXPORTS
 module.exports = {
   getAllUsers,
   getAllProperties,
   getAllBookings,
+  deleteUser
 };

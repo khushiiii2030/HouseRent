@@ -1,10 +1,11 @@
 const jwt = require("jsonwebtoken");
 
-// PROTECT (check login)
+// ================= PROTECT =================
 const protect = (req, res, next) => {
   try {
     let token;
 
+    // get token from header
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
@@ -18,19 +19,20 @@ const protect = (req, res, next) => {
 
     const decoded = jwt.verify(token, "secretkey");
 
-    // safer structure (important upgrade)
+    // ✅ FIX: normalize id safely
     req.user = {
-      id: decoded.id,
+      id: decoded.id || decoded._id,   // 🔥 important fix
       role: decoded.role,
     };
 
     next();
   } catch (error) {
+    console.log("JWT ERROR:", error.message);
     return res.status(401).json({ message: "Token failed or expired" });
   }
 };
 
-// ROLE BASED ACCESS
+// ================= ROLE CHECK =================
 const authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {

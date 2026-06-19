@@ -6,32 +6,51 @@ export default function AllProperties() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
+    fetchData();
+  }, []);
+
+  // 📌 GET PROPERTIES
+  const fetchData = async () => {
+    try {
       const res = await api.get("/property");
 
       console.log("PROPERTY DATA:", res.data);
 
       setProperties(res.data || []);
-    };
-
-    fetchData();
-  }, []);
-
-  // 🚀 BOOK PROPERTY FUNCTION (ADDED)
-  const bookProperty = async (propertyId) => {
-    try {
-      const res = await api.post("/booking/book", {
-        propertyId: propertyId,
-      });
-
-      alert("Booking successful!");
-      console.log(res.data);
     } catch (err) {
-      console.log(err);
-      alert("Booking failed");
+      console.log("FETCH ERROR:", err.response?.data || err.message);
     }
   };
 
+  // 📌 BOOK PROPERTY (FIXED)
+  const bookProperty = async (propertyId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Please login first");
+        return;
+      }
+
+      const res = await api.post(
+        "/booking/book",
+        { propertyId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("BOOK SUCCESS:", res.data);
+      alert("Booking successful 🎉");
+    } catch (err) {
+      console.log("BOOK ERROR:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Booking failed");
+    }
+  };
+
+  // 🔍 SEARCH FILTER
   const filtered = properties.filter((item) =>
     item.title?.toLowerCase().includes(search.toLowerCase()) ||
     item.location?.toLowerCase().includes(search.toLowerCase())
@@ -50,7 +69,7 @@ export default function AllProperties() {
           width: "300px",
           margin: "10px 0",
           borderRadius: "6px",
-          border: "1px solid #ccc"
+          border: "1px solid #ccc",
         }}
       />
 
@@ -64,7 +83,7 @@ export default function AllProperties() {
               borderRadius: "10px",
               padding: "15px",
               boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-              background: "#fff"
+              background: "#fff",
             }}
           >
             <h3>🏠 {item.title}</h3>
@@ -74,7 +93,6 @@ export default function AllProperties() {
             </p>
             <h4 style={{ color: "green" }}>₹ {item.rent}</h4>
 
-            {/* 🚀 BOOK BUTTON (ADDED) */}
             <button
               onClick={() => bookProperty(item._id)}
               style={{
@@ -84,7 +102,7 @@ export default function AllProperties() {
                 color: "white",
                 border: "none",
                 borderRadius: "6px",
-                cursor: "pointer"
+                cursor: "pointer",
               }}
             >
               📅 Book Now
