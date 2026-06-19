@@ -10,8 +10,13 @@ dotenv.config();
 const app = express();
 
 // ================= MIDDLEWARE =================
+// FIXED CORS FOR PRODUCTION + LOCAL
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5176"],
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5176",
+    "https://houserent-2-cxbb.onrender.com"
+  ],
   credentials: true
 }));
 
