@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 // ADMIN
 import AdminHome from "./modules/admin/AdminHome";
@@ -32,6 +32,9 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 export default function App() {
   return (
     <Routes>
+
+      {/* FIX: Default route */}
+      <Route path="/" element={<Navigate to="/login" />} />
 
       {/* AUTH */}
       <Route path="/login" element={<Login role="user" />} />
@@ -71,7 +74,7 @@ export default function App() {
         <Route path="bookings" element={<OwnerBookings />} />
       </Route>
 
-      {/* RENTER (CLEAN STRUCTURE) */}
+      {/* RENTER */}
       <Route
         path="/renter"
         element={
